@@ -1,6 +1,6 @@
-package co.istad.chaya.itegen3eco.domain;
+package co.istad.chaya.itegen3eco.features.order;
 
-import co.istad.chaya.itegen3eco.domain.Order;
+import co.istad.chaya.itegen3eco.features.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +18,8 @@ public class OrderLine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private Boolean isDelete;
+    @Column(name = "is_deleted",nullable = false)
+    private Boolean isDeleted;
 
     private Integer quantity;
     private BigDecimal unitPrice;
@@ -28,7 +28,7 @@ public class OrderLine {
     private Order order;
 
     @ManyToOne
-    private  Product product;
+    private Product product;
 
 
 

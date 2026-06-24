@@ -1,4 +1,4 @@
-package co.istad.chaya.itegen3eco.dto;
+package co.istad.chaya.itegen3eco.features.category.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

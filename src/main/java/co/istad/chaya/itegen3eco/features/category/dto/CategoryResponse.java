@@ -1,7 +1,7 @@
-package co.istad.chaya.itegen3eco.dto;
+package co.istad.chaya.itegen3eco.features.category.dto;
 
 
-import co.istad.chaya.itegen3eco.domain.Category;
+import co.istad.chaya.itegen3eco.features.category.Category;
 import lombok.Builder;
 
 @Builder

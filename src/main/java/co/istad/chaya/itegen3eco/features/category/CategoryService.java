@@ -1,8 +1,8 @@
-package co.istad.chaya.itegen3eco.service;
+package co.istad.chaya.itegen3eco.features.category;
 
-import co.istad.chaya.itegen3eco.dto.CreateCategoryRequest;
-import co.istad.chaya.itegen3eco.dto.CategoryResponse;
-import co.istad.chaya.itegen3eco.dto.UpdateCategoryRequest;
+import co.istad.chaya.itegen3eco.features.category.dto.CreateCategoryRequest;
+import co.istad.chaya.itegen3eco.features.category.dto.CategoryResponse;
+import co.istad.chaya.itegen3eco.features.category.dto.UpdateCategoryRequest;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

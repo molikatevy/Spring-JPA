@@ -1,12 +1,9 @@
-package co.istad.chaya.itegen3eco.service.impl;
+package co.istad.chaya.itegen3eco.features.category;
 
-import co.istad.chaya.itegen3eco.domain.Category;
-import co.istad.chaya.itegen3eco.dto.CreateCategoryRequest;
-import co.istad.chaya.itegen3eco.dto.CategoryResponse;
-import co.istad.chaya.itegen3eco.dto.UpdateCategoryRequest;
-import co.istad.chaya.itegen3eco.mapper.CategoryMapper;
-import co.istad.chaya.itegen3eco.repoditory.CategoryRepository;
-import co.istad.chaya.itegen3eco.service.CategoryService;
+import co.istad.chaya.itegen3eco.features.category.dto.CreateCategoryRequest;
+import co.istad.chaya.itegen3eco.features.category.dto.CategoryResponse;
+//import co.istad.chaya.itegen3eco.features.category.dto.UpdateCategoryRequest;
+import co.istad.chaya.itegen3eco.features.category.dto.UpdateCategoryRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,13 +22,10 @@ public class CategoryServiceImpl implements CategoryService {
    private final CategoryRepository categoryRepository;
    private final CategoryMapper categoryMapper;
 
-
-
     @Override
     public CategoryResponse creatNew(CreateCategoryRequest createCategoryRequest) {
         log.info("createNew {}",createCategoryRequest);
 
-        //validate category name
         boolean isExisting = categoryRepository
                 .existsByName(createCategoryRequest.name());
         if (isExisting)
@@ -54,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper
                 .mapCreateCategoryRequestToCategory(createCategoryRequest);
         //System generated data
-        category.setIsDelete(false);
+        category.setIsDeleted(false);
         category.setParentCategory(parentCategory);
 
         //Insert if primary key is null
@@ -78,7 +72,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(Integer id) {
         return categoryRepository.findById(id).map(categoryMapper::mapCategoryToCategoryResponse).
-                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Category not found with this id."));
+                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Category not found with this id."));
     }
 
     @Override
@@ -102,7 +97,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     private void softDeleteRecursive(Category category) {
-        category.setIsDelete(true);
+        category.setIsDeleted(true);
 
         if (category.getChildCategories() == null ||
                 category.getChildCategories().isEmpty()) {
@@ -118,18 +113,21 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryResponse> getSubCategories(Integer parentCategoryId) {
         Category category = categoryRepository.findById(parentCategoryId)
-                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Category not found with this id."));
-        if(category.getIsDelete()){
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Category not found with this id."));
+        if(category.getIsDeleted()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"This category is already deleted.");
         }
-        return categoryRepository.findAllByIsDeletedAndParentCategory(false,category).stream().map(categoryMapper::mapCategoryToCategoryResponse).toList();
+//        return categoryRepository.findAllByIsDeletedAndParentCategory(false,category).stream().map(categoryMapper::mapCategoryToCategoryResponse).toList();
+        return categoryRepository.findAllByIsDeleteAndParentCategory(false,category).
+                stream().map(categoryMapper::mapCategoryToCategoryResponse).toList();
     }
 
     @Override
     public CategoryResponse updateCategoryById(Integer id, UpdateCategoryRequest updateCategoryRequest) {
         Category category = categoryRepository.findById(id).
                 orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"Category not found with this id."));
-        if(category.getIsDelete()==true){
+        if(category.getIsDeleted()==true){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"This category is already deleted.");
         }
         if(updateCategoryRequest.name() !=null){

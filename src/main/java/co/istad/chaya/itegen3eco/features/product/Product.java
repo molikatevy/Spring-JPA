@@ -1,6 +1,10 @@
-package co.istad.chaya.itegen3eco.domain;
+package co.istad.chaya.itegen3eco.features.product;
 
+import co.istad.chaya.itegen3eco.features.category.Category;
+import co.istad.chaya.itegen3eco.features.order.OrderLine;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,56 +17,33 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "products")
-
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(nullable = false , length = 100, unique = true)
+    @Column(length = 100, nullable = false, unique = true)
     private String code;
-
     @Column(nullable = false, unique = true)
-    private String slug;
-
+    private String slug; // for SEO
     @Column(nullable = false)
     private String name;
-
     @Column(length = 500)
     private String description;
-
     @Column(nullable = false)
     private String thumbnail;
-
     @Column(nullable = false)
     private BigDecimal unitPrice;
-
     @Column(nullable = false)
-    private Integer quantuty;
+    private Integer qty;
 
     @Column(nullable = false)
     private Boolean isAvailable;
-
     @Column(nullable = false)
-    private Boolean isDeleted;
+    private Boolean isDeleted; // soft delete
 
     @ManyToOne
     private Category category;
 
     @OneToMany(mappedBy = "product")
     private List<OrderLine> orderLines;
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

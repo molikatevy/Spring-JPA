@@ -1,10 +1,9 @@
-package co.istad.chaya.itegen3eco.controller;
+package co.istad.chaya.itegen3eco.features.category;
 
 
-import co.istad.chaya.itegen3eco.dto.CategoryResponse;
-import co.istad.chaya.itegen3eco.dto.CreateCategoryRequest;
-import co.istad.chaya.itegen3eco.dto.UpdateCategoryRequest;
-import co.istad.chaya.itegen3eco.service.CategoryService;
+import co.istad.chaya.itegen3eco.features.category.dto.CategoryResponse;
+import co.istad.chaya.itegen3eco.features.category.dto.CreateCategoryRequest;
+import co.istad.chaya.itegen3eco.features.category.dto.UpdateCategoryRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+//import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/categories")
@@ -28,7 +29,8 @@ public class CategoryController {
     }
 
     @GetMapping
-    public Page<CategoryResponse> getAllCategories(@RequestParam(defaultValue = "0") Integer pageNumber, @RequestParam(defaultValue = "25") Integer pageSize){
+    public Page<CategoryResponse> getAllCategories(@RequestParam(defaultValue = "0") Integer pageNumber,
+                                                   @RequestParam(defaultValue = "25") Integer pageSize){
         return categoryService.allCategories(pageNumber,pageSize);
     }
     @GetMapping("/{id}")
@@ -58,6 +60,7 @@ public class CategoryController {
     public CategoryResponse updateCategoryById(@PathVariable Integer id, @RequestBody UpdateCategoryRequest updateCategoryRequest){
         return  categoryService.updateCategoryById(id,updateCategoryRequest);
     }
+
 
 
 }

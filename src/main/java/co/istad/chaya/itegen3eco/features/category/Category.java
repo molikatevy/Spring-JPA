@@ -1,5 +1,6 @@
-package co.istad.chaya.itegen3eco.domain;
+package co.istad.chaya.itegen3eco.features.category;
 
+import co.istad.chaya.itegen3eco.features.product.Product;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,8 +22,9 @@ public class Category {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    @Column(nullable = false)
-    private Boolean isDelete;
+    // Fix: Match the database column name
+    @Column(name = "is_delete", nullable = false)
+    private Boolean isDeleted;
 
     private String description;
     private String icon;

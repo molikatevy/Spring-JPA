@@ -1,4 +1,4 @@
-package co.istad.chaya.itegen3eco.domain;
+package co.istad.chaya.itegen3eco.features.order;
 
 
 import jakarta.persistence.*;
@@ -25,7 +25,7 @@ public class Order {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @Column(name = "is_deleted",nullable = false)
     private Boolean isDeleted;
 
     @Column(nullable = false)

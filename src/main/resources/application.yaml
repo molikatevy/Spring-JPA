@@ -1,3 +1,7 @@
+file:
+  client-path: "/file"
+  storage-location: "D://new/"
+  base-uri: http://localhost:${server.port}${file.client-path}/
 spring:
   jpa:
     hibernate:
@@ -13,3 +17,5 @@ spring:
     password: ${PASSWORD}
   application:
     name: ITE-Gen3-Eco
+server:
+  port: 8080

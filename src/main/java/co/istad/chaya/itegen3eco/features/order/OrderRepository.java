@@ -1,6 +1,5 @@
-package co.istad.chaya.itegen3eco.repoditory;
+package co.istad.chaya.itegen3eco.features.order;
 
-import co.istad.chaya.itegen3eco.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
