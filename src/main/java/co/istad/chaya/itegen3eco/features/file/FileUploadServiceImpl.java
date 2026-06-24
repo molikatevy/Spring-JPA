@@ -116,7 +116,7 @@ public class FileUploadServiceImpl implements FileUpLoadService {
 
         // Delete from database
         FileUpLoad fileUpLoad = fileUpLoadRepository.findByName(name)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT,
                         "File record not found: " + name));
         fileUpLoadRepository.delete(fileUpLoad);
     }
