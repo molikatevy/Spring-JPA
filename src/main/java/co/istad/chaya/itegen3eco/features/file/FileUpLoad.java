@@ -2,6 +2,7 @@ package co.istad.chaya.itegen3eco.features.file;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 
 public class FileUpLoad {
 
@@ -20,6 +22,9 @@ public class FileUpLoad {
 
     @Column(nullable = false,unique = true)
     private String name;
+
+    @Column(nullable = false, length = 15,name = "extansion")
+    private String extansion;
     private String caption;
 
 

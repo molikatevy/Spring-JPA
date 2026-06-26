@@ -38,5 +38,5 @@ public class Order {
     private LocalDateTime orderedAt;
 
     @OneToMany(mappedBy = "order")
-    private List<OrderLine> orderLineList;
+    private List<OrderLine> orderLine;
 }

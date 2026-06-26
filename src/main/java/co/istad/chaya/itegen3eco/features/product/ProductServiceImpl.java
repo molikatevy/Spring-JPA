@@ -2,6 +2,7 @@ package co.istad.chaya.itegen3eco.features.product;
 
 import co.istad.chaya.itegen3eco.features.category.Category;
 import co.istad.chaya.itegen3eco.features.category.CategoryRepository;
+import co.istad.chaya.itegen3eco.features.file.dto.FileUpLoadResponse;
 import co.istad.chaya.itegen3eco.features.product.dto.CreateProductRequest;
 import co.istad.chaya.itegen3eco.features.product.dto.ProductResponse;
 import co.istad.chaya.itegen3eco.utils.GenerateUtils;
@@ -15,22 +16,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductService{
+@Slf4j
+public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
     @Override
     public Page<ProductResponse> findAll(int pageNumber, int pageSize) {
-        Sort sortById = Sort.by(Sort.Direction.DESC,"id");
-        PageRequest pageRequest = PageRequest.of(pageNumber,pageSize,sortById);
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortById);
 
-        Page<Product> products = productRepository
-                .findAll(pageRequest);
+        Page<Product> products = productRepository.findAll(pageRequest);
+
         return products.map(productMapper::mapProductToProductResponse);
     }
+
 
     @Override
     public ProductResponse createNew(CreateProductRequest createProductRequest) {

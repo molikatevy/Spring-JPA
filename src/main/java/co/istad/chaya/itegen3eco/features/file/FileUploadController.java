@@ -3,6 +3,7 @@ package co.istad.chaya.itegen3eco.features.file;
 
 import co.istad.chaya.itegen3eco.features.file.dto.FileUpLoadResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class FileUploadController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/multiple")
-    public List<FileUpLoadResponse> uploadMultiple(@RequestPart MultipartFile[] files){
+    public List<FileUpLoadResponse> uploadMultiple(@RequestPart List<MultipartFile> files){
         return fileUpLoadService.uploadMultipartFile(files);
     }
 
@@ -35,5 +36,18 @@ public class FileUploadController {
         fileUpLoadService.deletedByName(name);
     }
 
+    @GetMapping("/{name}")
+    public FileUpLoadResponse findByName(@PathVariable String name) {
+        return fileUpLoadService.findByName(name);
+    }
+
+
+    @GetMapping
+    public Page<FileUpLoadResponse> findAll(
+            @RequestParam(required = false, defaultValue = "0") int pageNumber,
+            @RequestParam(required = false, defaultValue = "25") int pageSize
+    ) {
+        return fileUpLoadService.findAll(pageNumber, pageSize);
+    }
 
 }

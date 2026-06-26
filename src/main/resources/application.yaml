@@ -17,5 +17,10 @@ spring:
     password: ${PASSWORD}
   application:
     name: ITE-Gen3-Eco
+#    update file size (min -> max)
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 server:
   port: 8080

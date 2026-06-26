@@ -7,13 +7,24 @@ import org.springframework.data.domain.Page;
 public interface ProductService {
 
 
+    /**
+     * Find products by pagination
+     * @param pageNumber
+     * @param pageSize
+     * @return
+     */
     Page<ProductResponse> findAll(int pageNumber, int pageSize);
 
-/**
- * Create a new product
- * @param createProductRequest  is requesting data for creating product
- * @return f@link ProductResponse
- *
- * */
-ProductResponse createNew (CreateProductRequest createProductRequest);
+
+    /**
+     * Create a new product
+     * @param createProductRequest is requesting data for creating product
+     * @return {@link ProductResponse}
+     * @author tang_sengkim
+     * @since 23-June-2026
+     */
+    ProductResponse createNew(CreateProductRequest createProductRequest);
+
+
+
 }

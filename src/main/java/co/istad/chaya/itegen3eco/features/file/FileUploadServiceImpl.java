@@ -4,11 +4,15 @@ package co.istad.chaya.itegen3eco.features.file;
 import co.istad.chaya.itegen3eco.features.file.dto.FileUpLoadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +20,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +33,15 @@ public class FileUploadServiceImpl implements FileUpLoadService {
     private String baseUri;
 
     private final FileUpLoadRepository fileUpLoadRepository;
+    private final FileUploadMapper fileUploadMapper;
 
     @Override
     public FileUpLoadResponse upload(MultipartFile file) {
+        return savefile(file);
 
+    }
+
+    private FileUpLoadResponse savefile(MultipartFile file) {
         // Prepare file information
         // File name
         String name = UUID.randomUUID().toString();
@@ -40,10 +50,10 @@ public class FileUploadServiceImpl implements FileUpLoadService {
         String ext = file.getOriginalFilename()
                 .substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 
-        name += "." + ext; // new-unique-filename.ext
+        // new-unique-filename.ext
 
         // Create absolute path to store file
-        Path path = Paths.get(storageLocation + name);
+        Path path = Paths.get(storageLocation + name+"."+ext);
 
         try {
             Files.copy(file.getInputStream(), path);
@@ -52,72 +62,57 @@ public class FileUploadServiceImpl implements FileUpLoadService {
                     "File has been failed to upload");
         }
 
-        return FileUpLoadResponse.builder()
-                .name(name)
-                .size(file.getSize())
-                .mediaType(file.getContentType())
-                .uri(baseUri + name)
-                .build();
+//        save information file into an
+        FileUpLoad fileUpLoad = new FileUpLoad();
+        fileUpLoad.setName(name);
+        fileUpLoad.setExtansion(ext);
+        fileUpLoad.setCaption("ISTAD -Advaced IT Institrute in cambodia");
+        fileUpLoad.setSize(file.getSize());
+        fileUpLoad.setMediaType(file.getContentType());
+        fileUpLoadRepository.save(fileUpLoad);
+
+        return fileUploadMapper.mapFileUploadToFileUploadResponse(fileUpLoad);
     }
-
     @Override
-    public List<FileUpLoadResponse> uploadMultipartFile(MultipartFile[] files) {
-        List<FileUpLoadResponse> responses = new ArrayList<>();
-
-        if (files == null || files.length == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No files provided");
-        }
-
-        for (MultipartFile file : files) {
-            responses.add(upload(file));
-        }
-
-        return responses;
+    public List<FileUpLoadResponse> uploadMultipartFile(List<MultipartFile> files) {
+       return files.stream()
+               .map(this::savefile)
+               .collect(Collectors.toList());
     }
 
     @Override
     public void deletedByName(String name) {
-        // Delete physical file - search for any file that starts with the name
-        Path uploadPath = Paths.get(storageLocation);
-        boolean fileFound = false;
-        String foundFileName = null;
+        FileUpLoad fileUpLoad = fileUpLoadRepository.findByName(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"File is not found"));
+        fileUpLoadRepository.delete(fileUpLoad);
+
+        Path path = Paths.get(storageLocation + name);
+
 
         try {
-            // List all files in the directory
-            try (var stream = Files.list(uploadPath)) {
-                for (Path filePath : (Iterable<Path>) stream::iterator) {
-                    String fileName = filePath.getFileName().toString();
-                    // Check if the file starts with the name (followed by a dot)
-                    if (fileName.startsWith(name + ".")) {
-                        Files.delete(filePath);
-                        fileFound = true;
-                        foundFileName = fileName;
-                        break;
-                    }
-                }
-            }
+            boolean isExisted = Files.deleteIfExists(path);
+            if (!isExisted)
+                throw  new ResponseStatusException(HttpStatus.NOT_FOUND,"File is not found");
 
-            if (!fileFound) {
-                // If no file starts with the name, try exact match
-                Path path = Paths.get(storageLocation + name);
-                if (Files.exists(path)) {
-                    Files.delete(path);
-                    fileFound = true;
-                } else {
-                    throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                            "File not found for name: " + name);
-                }
-            }
-
-        } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Failed to delete file: " + e.getMessage());
+        }  catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File has been failed to delete");
         }
+    }
 
-        // Delete from database
-        FileUpLoad fileUpLoad = fileUpLoadRepository.findByName(name)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT,
-                        "File record not found: " + name));
-        fileUpLoadRepository.delete(fileUpLoad);
+    @Override
+    public Page<FileUpLoadResponse> findAll(int pageNumber, int pageSize) {
+        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortById);
+
+        Page<FileUpLoad> fileUploadResponses = fileUpLoadRepository.findAll(pageRequest);
+
+        return fileUploadResponses.map(fileUploadMapper::mapFileUploadToFileUploadResponse);
+    }
+
+    @Override
+    public FileUpLoadResponse findByName(String name) {
+        return fileUpLoadRepository.findByName(name)
+                .map(fileUploadMapper::mapFileUploadToFileUploadResponse)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"File has not been found"));
     }
 }
